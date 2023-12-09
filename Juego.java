@@ -3,6 +3,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Juego{
@@ -39,6 +41,7 @@ public class Juego{
                     }
                     contador++;
                 }
+                br.close();
             }
 
             catch (FileNotFoundException e) {
@@ -54,7 +57,7 @@ public class Juego{
             }
             
             if (linea == null) {
-                //Aqui es que no quedan tableros sin jugar, lo que mostrará las estadísticas.
+                //Aqui es que no quedan tableros pàra jugar (se han jugado todos), lo que mostrará las estadísticas.
                 double porcent = (double)tabGanados/tabJugados;
                 porcent = porcent*100;
                 DecimalFormat formatDec = new DecimalFormat("#.##");
@@ -64,10 +67,46 @@ public class Juego{
                 break;
             }
 
-            else{ 
-                //Continuar jugando
+            else{
+                //Hay tableros donde jugar
+                //ArrayList donde se guardaran las casillas fijas donde no se podran mover
+                List<String> casillaBloq = new ArrayList<String>();
+                System.out.println(linea);
+                int indiceTablero = 0;
+            
+                for (int fila = 1; fila < matriz.length; fila++) {
+                    for (int col = 1; col < matriz[fila].length; col++) {
+                        char model = linea.charAt(indiceTablero++);
+                        
+                        if (model == ' ') {
+                            model = linea.charAt(indiceTablero++);
+                            
+                        }
+
+                        if (model == '1'){
+                            matriz[fila][col] = 'o';
+                            casillaBloq.add("1");
+                        }
+
+                        else if (model == '2') {
+                            matriz[fila][col] = 'x';
+                            casillaBloq.add("1");
+                        }
+                      
+                    }
+                }   
+                //Generada la matriz
+                for (int fila = 0; fila < matriz.length; fila++) {
+                    for (int col = 0; col < matriz[fila].length; col++) {
+                        System.out.print(matriz[fila][col] + "\t");
+                    }
+                    System.out.println();
+                }
                 
-               
+                for(int i = 0; i != casillaBloq.size(); ++i){
+                    System.out.print(casillaBloq.get(i));
+                }
+                  
                 break;
             }
 
