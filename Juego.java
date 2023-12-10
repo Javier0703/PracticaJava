@@ -3,9 +3,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class Juego{
     public static void main(String[] args) {
@@ -69,8 +66,8 @@ public class Juego{
 
             else{
                 //Hay tableros donde jugar
-                //ArrayList donde se guardaran las casillas fijas donde no se podran mover
-                List<String> casillaBloq = new ArrayList<String>();
+                //StringBuilder donde se guardaran las casillas fijas donde no se podran mover
+                StringBuilder casillaBloq = new StringBuilder();
                 System.out.println(linea);
                 int indiceTablero = 0;
             
@@ -83,16 +80,38 @@ public class Juego{
                             
                         }
 
-                        if (model == '1'){
-                            matriz[fila][col] = 'o';
-                            casillaBloq.add("1");
+                        if (model == '1' || model == '2'){
+                            if(model == '1'){
+                                matriz[fila][col] = 'o';
+                            }
+                            else{
+                               matriz[fila][col] = 'x'; 
+                            }
+                            int cFila = fila;
+                            String letra;
+                            switch (col) {
+                                case 1:
+                                    letra = "A"; 
+                                    break;
+                                case 2:
+                                    letra = "B"; 
+                                    break;
+                                case 3:
+                                    letra = "C"; 
+                                    break;
+                                case 4:
+                                    letra = "D";
+                                    break;
+                                case 5:
+                                    letra = "E";
+                                    break;   
+                                default:
+                                    letra = "F";
+                                    break;
+                            }
+                            String concat = String.valueOf(cFila)+letra+" ";
+                            casillaBloq.append(concat);
                         }
-
-                        else if (model == '2') {
-                            matriz[fila][col] = 'x';
-                            casillaBloq.add("1");
-                        }
-                      
                     }
                 }   
                 //Generada la matriz
@@ -102,12 +121,10 @@ public class Juego{
                     }
                     System.out.println();
                 }
-                
-                for(int i = 0; i != casillaBloq.size(); ++i){
-                    System.out.print(casillaBloq.get(i));
-                }
-                  
+                //Ahora generamos el array para compararlo posteriormente
+                String[] arrayCasillasBlocked = casillaBloq.toString().split(" ");
                 break;
+                //Aqui ya empezaria a pedir un Scanner con el que introduzca el usuario algo y lo comparase si son fijas o no, si quedan casillas por resolver... etc
             }
 
         }
