@@ -2,13 +2,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.text.DecimalFormat;
 import java.util.Scanner;
 
+
 //Para detectar el Enter
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import javax.swing.*;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 
 public class Juego{
     public static void main(String[] args) {
@@ -61,29 +61,19 @@ public class Juego{
             
             if (linea == null) {
                 //Aqui es que no quedan tableros pàra jugar (se han jugado todos), lo que mostrará las estadísticas.
-                double porcent = (double)tabGanados/tabJugados;
-                porcent = porcent*100;
-                DecimalFormat formatDec = new DecimalFormat("#.##");
-                String numFormat = formatDec.format(porcent);
-                System.out.println("¡Vaya! Ya no quedan mas tableros. Estos son tus resultados: ");
-                System.out.println("Tableros jugados: " + tabJugados + " | Tableros ganados: " + tabGanados +"\n" + "Porcentaje de victoria: " + numFormat + " %");
+                MetodosEmpleados.ResumenPartidas(tabGanados, tabJugados);
                 break;
             }
 
             else{
                 //Hay tableros donde jugar
                 StringBuilder casillaBloq = new StringBuilder();
+                linea = linea.replaceAll(" ", "");
                 int indiceTablero = 0;
-            
                 for (int fila = 1; fila < matriz.length; fila++) {
                     for (int col = 1; col < matriz[fila].length; col++) {
                         char model = linea.charAt(indiceTablero++);
                         
-                        if (model == ' ') {
-                            model = linea.charAt(indiceTablero++);
-                            
-                        }
-
                         if (model == '1' || model == '2'){
                             if(model == '1'){
                                 matriz[fila][col] = 'o';
@@ -117,18 +107,13 @@ public class Juego{
                             casillaBloq.append(concat);
                         }
                     }
-                }   
-                //Generada la matriz
-                for (int fila = 0; fila < matriz.length; fila++) {
-                    for (int col = 0; col < matriz[fila].length; col++) {
-                        System.out.print(matriz[fila][col] + "\t");
-                    }
-                    System.out.println();
-                }
-                //Ahora generamos el array para compararlo posteriormente
+                }  
 
+                //Generar la matriz
+                MetodosEmpleados.ImprimirMatriz(matriz);
+
+                //Ahora generamos el array para compararlo posteriormente
                 String[] arrayCasillasBlocked = casillaBloq.toString().split(" ");
-                String lineaModificable = linea.replaceAll(" ", "");
 
                 while (true) {
                     //Recorremos la Matriz para ver si esta vacía o no
@@ -140,6 +125,7 @@ public class Juego{
                             } 
                         }
                     }
+
                     //Si es 36, esta llena
                     Scanner in = new Scanner(System.in); 
                     if (count == 36){
@@ -172,8 +158,7 @@ public class Juego{
 
                                 else{
                                     //La jugada puede proseguir, ya que no está bloqueada.
-                                    //Hay que saber la posicion de la jugada en el Array y cambiarla.
-                                    int v1 = (Character.getNumericValue(casilla.charAt(0))-1) * 6;
+                                    int v1 = (Character.getNumericValue(casilla.charAt(0)));
                                     int v2;
                                     switch (casilla.charAt(1)) {
                                         case 'A':
@@ -189,19 +174,18 @@ public class Juego{
                                         default:
                                             v2 = 6; break;  
                                     }
-                                    int v = v1 + v2 -1;
-                                    char valorCasilla = lineaModificable.charAt(v);
-                                    StringBuilder build = new StringBuilder(lineaModificable);
-                                    if (valorCasilla == '0' || valorCasilla == '1') {
-                                        build.setCharAt(v, '2');
-                                    } 
-                                    else {
-                                        build.setCharAt(v, '1');
+
+                                    if (matriz[v1][v2] == 'x'){
+                                        matriz[v1][v2] = 'o';
                                     }
-                                    lineaModificable = build.toString();
-                                    System.out.println(lineaModificable);
+                                    else{
+                                        matriz[v1][v2] = 'x';
+                                    }
+
+                                    //Guardar los movimientos del usuario
                                 }
                                 //Generar la Matriz
+                                MetodosEmpleados.ImprimirMatriz(matriz);
                                 
                             }
 
@@ -213,6 +197,8 @@ public class Juego{
                         else{
                             System.out.println("La entrada no es válida");
                         }
+
+                    in.close();    
                 }
                 
 
@@ -222,6 +208,7 @@ public class Juego{
         }       
         
     }
-        
-    
- }
+
+}
+
+ 
