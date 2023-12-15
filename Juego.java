@@ -1,14 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-
-//Para detectar el Enter
-//import javax.swing.*;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
+//import java.text.DecimalFormat;
 
 public class Juego{
     public static void main(String[] args) {
@@ -23,7 +20,7 @@ public class Juego{
         }
 
         //Se comenzara con el primer tablero
-        int tablero = 0;
+        int tablero = 42;
         String archivo = "tableros.txt";
         //Aqui se guardara el tablero que se va a jugar
         String linea = null;
@@ -61,7 +58,8 @@ public class Juego{
             
             if (linea == null) {
                 //Aqui es que no quedan tableros pàra jugar (se han jugado todos), lo que mostrará las estadísticas.
-                MetodosEmpleados.ResumenPartidas(tabGanados, tabJugados);
+                System.out.println("¡Vaya! Ya no quedan mas tableros");
+                ResumenPartidas(tabGanados, tabJugados);
                 break;
             }
 
@@ -110,10 +108,13 @@ public class Juego{
                 }  
 
                 //Generar la matriz
-                MetodosEmpleados.ImprimirMatriz(matriz);
+                ImprimirMatriz(matriz);
 
                 //Ahora generamos el array para compararlo posteriormente
                 String[] arrayCasillasBlocked = casillaBloq.toString().split(" ");
+
+                //StringBuilder de los movimientos realizados
+                StringBuilder movimientos = new StringBuilder();
 
                 while (true) {
                     //Recorremos la Matriz para ver si esta vacía o no
@@ -127,6 +128,7 @@ public class Juego{
                     }
 
                     //Si es 36, esta llena
+
                     Scanner in = new Scanner(System.in); 
                     if (count == 36){
                         System.out.println("Pulse tecla intro si ha terminado:");
@@ -138,6 +140,7 @@ public class Juego{
                     }
 
                     String casilla = in.nextLine();
+
                         if (casilla.length() == 2) {
                             char primerCaracter = casilla.charAt(0);
                             char segundoCaracter = casilla.charAt(1);
@@ -175,17 +178,30 @@ public class Juego{
                                             v2 = 6; break;  
                                     }
 
+                                    //Las separamos de esta manera porque asi sabemos la jugada que hemos hecho.
+                                    int j;
+
                                     if (matriz[v1][v2] == 'x'){
                                         matriz[v1][v2] = 'o';
+                                        j=1;
+                                    }
+                                    else if(matriz[v1][v2] == 'o'){
+                                        matriz[v1][v2] = 'x';
+                                        j=2;
                                     }
                                     else{
                                         matriz[v1][v2] = 'x';
+                                        j=0;
                                     }
 
+                                    //Si la j vale 0; esa casilla estaba vacia, el 1 pasa de X -> O... (Para saber 
+                                    //las jugadas y deshacerlas mas facilmente)
+
                                     //Guardar los movimientos del usuario
+                                    movimientos.append(casilla+j);
                                 }
                                 //Generar la Matriz
-                                MetodosEmpleados.ImprimirMatriz(matriz);
+                                ImprimirMatriz(matriz);
                                 
                             }
 
@@ -193,22 +209,226 @@ public class Juego{
                                 System.out.println("La entrada no es válida");
                             }
                         }
+                        
+                        else if (casilla.equals("-")) {
+                            if (movimientos.length() == 0) {
+                                System.out.println("No hay movimientos por deshacer");
+                            } 
 
-                        else{
-                            System.out.println("La entrada no es válida");
+                            else{
+                                //Deshacer los cambios
+                                String eliminarJugada = movimientos.toString().substring(movimientos.length() - 3);
+                                int index = movimientos.lastIndexOf(eliminarJugada);
+                                String movimientosActuales = movimientos.toString().substring(0, index);
+                                StringBuilder mov = new StringBuilder(movimientosActuales);
+                                movimientos = mov;
+                                char eJ1 = eliminarJugada.charAt(0);
+                                char eJ2 = eliminarJugada.charAt(1);
+                                char eJ3 = eliminarJugada.charAt(2);
+
+                                int v2;
+                                switch (eJ2) {
+                                        case 'A':
+                                            v2 = 1; break;
+                                        case 'B':
+                                            v2 = 2; break;
+                                        case 'C':
+                                            v2 = 3; break;
+                                        case 'D':
+                                            v2 = 4; break;
+                                        case 'E':
+                                            v2 = 5; break;    
+                                        default:
+                                            v2 = 6; break;  
+                                    }
+                                
+                                int numero = Character.getNumericValue(eJ1);
+
+                                if (eJ3 == '0') {
+                                    matriz[numero][v2] = ' ';
+                                }
+
+                                else if(eJ3 == '1'){
+                                    matriz[numero][v2] = 'x';
+                                }
+
+                                else{
+                                    matriz[numero][v2] = 'o';
+                                }
+                            }   
+                            ImprimirMatriz(matriz);                               
                         }
 
-                    in.close();    
-                }
+                        else if (casilla.isEmpty() && count == 36) {
+                            //Comprobacion del tablero
+
+                            //Comprobar si hay dos X en las filas seguidas
+                            int r = 0;
+                            int sumarX = 0;
+                            int sumarO = 0;
+                            for (int fila = 1; fila<matriz.length; fila++){
+                                for (int col = 1; col<matriz.length; col++){
+
+                                    if (matriz[fila][col] == 'x') {
+                                        sumarX++;
+                                        if (sumarX == 3) {
+                                            r++;
+                                            break;  
+                                        }
+                                        
+                                        if (matriz[fila][col] != 'x') {
+                                            if (sumarX > 0) {
+                                                sumarX--; 
+                                            } 
+                                        }
+                                    }
+
+                                    else{
+                                        sumarO++;
+                                        if (sumarO == 3) {
+                                            r++;
+                                            break;  
+                                        }
+
+                                        if (matriz[fila][col] != 'o') {
+                                            if (sumarO > 0) {
+                                                sumarO--; 
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                if (sumarX == 3 || sumarO == 3) {
+                                    System.out.println("¡Tablero Fallado!");
+                                    System.out.println("Has incumplido una norma (no puede haber 3 'x' o 3 'o' contiguas en horizontal)");
+                                    r++;
+                                    break;
+                                }
+                                sumarO = 0;
+                                sumarX = 0;
+                            }
+                            sumarX = 0;
+                            sumarO = 0;
+
+                            //Comprobar si hay dos X en Columnas seguidas
+                            if (r == 0) {
+                                for (int col = 1; col<matriz.length; col++){
+                                    for (int fila = 1; fila<matriz.length; fila++){
+                                        if (matriz[fila][col] == 'x') {
+                                            sumarX++;
+                                            if (sumarX == 3) {
+                                                r++;
+                                                break;  
+                                            }
+                                            
+                                            if (matriz[fila][col] != 'x') {
+                                                if (sumarX > 0) {
+                                                    sumarX--; 
+                                                } 
+                                            }
+                                        }
+
+                                    else{
+                                        sumarO++;
+                                        if (sumarO == 3) {
+                                            r++;
+                                            break;  
+                                        }
+
+                                        if (matriz[fila][col] != 'o') {
+                                            if (sumarO > 0) {
+                                                sumarO--; 
+                                            }
+                                        }
+                                    }
+                                    }
+
+
+                                    if (sumarX == 3 || sumarO == 3) {
+                                        System.out.println("¡Tablero Fallado!");
+                                        System.out.println("Has incumplido una norma (no puede haber 3 'x' o 3 'o' contiguas en vertical)");
+                                        r++;
+                                        break;
+                                        
+                                    }
+
+                                    sumarO = 0;
+                                    sumarX = 0;
+                                } 
+
+                                sumarO = 0;
+                                sumarX = 0;
+                            }
+
+                            sumarO = 0;
+                            sumarX = 0;
+                           
+
+                            //Validar Si las casillas son las mismas X y O
+                            for (int fila = 1; fila<matriz.length; fila++){
+                                for (int col = 1; col<matriz.length; col++){
+                                    if (matriz[fila][col] == 'x') {
+                                        sumarX++;
+                                    }
+                                    else{
+                                        sumarO++;
+                                    }
+                                }
+                                if (sumarO != sumarX) {
+                                    
+                                }
+                            }
+
+                            for (int col = 1; col<matriz.length; col++){
+                                for (int fila = 1; fila<matriz.length; fila++){
+
+                                }
+                            }
+
+
+                            //Validar si las columnas y filas no hay repetidas
+                            for (int fila = 1; fila<matriz.length; fila++){
+                                for (int col = 1; col<matriz.length; col++){
+
+                                }
+                            }
+                            
+                            for (int col = 1; col<matriz.length; col++){
+                                for (int fila = 1; fila<matriz.length; fila++){
+
+                                }
+                            }
+
+                            //Decir si quiere jugar o no
+
+                        }
+                       
+                        else{
+                            System.out.println("La entrada no es válida");
+                        }  
                 
-
+                } 
             }
-            
-
-        }       
-        
+        }               
     }
 
+    public static void ImprimirMatriz(char[][] matriz){
+        for (int fila = 0; fila < matriz.length; fila++) {
+            for (int col = 0; col < matriz[fila].length; col++) {
+                    System.out.print(matriz[fila][col] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void ResumenPartidas(int tabGanados, int tabJugados ){
+        double porcent = (double)tabGanados/tabJugados;
+        porcent = porcent*100;
+        DecimalFormat formatDec = new DecimalFormat("#.##");
+        String numFormat = formatDec.format(porcent);
+        System.out.println("Estos son tus resultados:");
+        System.out.println("Tableros jugados: " + tabJugados + " | Tableros ganados: " + tabGanados +"\n" + "Porcentaje de victoria: " + numFormat + " %");
+    }
 }
 
  
