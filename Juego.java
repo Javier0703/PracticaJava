@@ -20,20 +20,17 @@ public class Juego{
         }
 
         //Se comenzara con el primer tablero
-        int tablero = 1;
+        int tablero = 0;
         String archivo = "tableros.txt";
         //Aqui se guardara el tablero que se va a jugar
         String linea = null;
         int tabJugados = 0;
         int tabGanados = 0;
         int cierreJuego = 0;
+        int respuesta = 0;
 
         //Bucle del juego
-        while (true) {
-
-            if (cierreJuego == 1) {
-                break;
-            }
+        while (cierreJuego == 0) {
 
             try{
                 int contador = 0;
@@ -85,27 +82,8 @@ public class Juego{
                                matriz[fila][col] = 'x'; 
                             }
                             int cFila = fila;
-                            String letra;
-                            switch (col) {
-                                case 1:
-                                    letra = "A"; 
-                                    break;
-                                case 2:
-                                    letra = "B"; 
-                                    break;
-                                case 3:
-                                    letra = "C"; 
-                                    break;
-                                case 4:
-                                    letra = "D";
-                                    break;
-                                case 5:
-                                    letra = "E";
-                                    break;   
-                                default:
-                                    letra = "F";
-                                    break;
-                            }
+                            String letra = " ";
+                            letra = IntToString(col, letra);
                             String concat = String.valueOf(cFila)+letra+" ";
                             casillaBloq.append(concat);
                         }
@@ -168,22 +146,9 @@ public class Juego{
                                 else{
                                     //La jugada puede proseguir, ya que no está bloqueada.
                                     int v1 = (Character.getNumericValue(casilla.charAt(0)));
-                                    int v2;
-                                    switch (casilla.charAt(1)) {
-                                        case 'A':
-                                            v2 = 1; break;
-                                        case 'B':
-                                            v2 = 2; break;
-                                        case 'C':
-                                            v2 = 3; break;
-                                        case 'D':
-                                            v2 = 4; break;
-                                        case 'E':
-                                            v2 = 5; break;    
-                                        default:
-                                            v2 = 6; break;  
-                                    }
-
+                                    int v2 = 0;
+                                    v2 = CharToInt(casilla.charAt(1), v2);
+                                    
                                     //Las separamos de esta manera porque asi sabemos la jugada que hemos hecho.
                                     int j;
 
@@ -214,8 +179,10 @@ public class Juego{
                             else{
                                 System.out.println("La entrada no es válida");
                             }
+
                         }
                         
+
                         else if (casilla.equals("-")) {
                             if (movimientos.length() == 0) {
                                 System.out.println("No hay movimientos por deshacer");
@@ -232,21 +199,8 @@ public class Juego{
                                 char eJ2 = eliminarJugada.charAt(1);
                                 char eJ3 = eliminarJugada.charAt(2);
 
-                                int v2;
-                                switch (eJ2) {
-                                        case 'A':
-                                            v2 = 1; break;
-                                        case 'B':
-                                            v2 = 2; break;
-                                        case 'C':
-                                            v2 = 3; break;
-                                        case 'D':
-                                            v2 = 4; break;
-                                        case 'E':
-                                            v2 = 5; break;    
-                                        default:
-                                            v2 = 6; break;  
-                                    }
+                                int v2 = 0;
+                                v2 = CharToInt(eJ2, v2);
                                 
                                 int numero = Character.getNumericValue(eJ1);
 
@@ -481,11 +435,13 @@ public class Juego{
                             while (true) {
                                 System.out.println("¿Quiere volver a jugar?");
                                 String resp = in.nextLine().toUpperCase();
-                                if(resp.charAt(0) == 'S' && resp.charAt(1) == 'I'){
+                                if(resp.toUpperCase().equals("SI")){
+                                    respuesta++;
                                     break;
                                 }
 
-                                else if(resp.charAt(0) == 'N' && resp.charAt(1) == 'O'){
+                                else if(resp.toUpperCase().equals("NO")){
+                                    respuesta++;
                                     cierreJuego++;
                                     break;
                                 }
@@ -502,6 +458,21 @@ public class Juego{
                     
                     //Saber si quiere jugar o no
 
+                    if (respuesta == 1) {
+                        respuesta = 0;
+                        for (int col = 1; col<matriz.length; col++){
+                            for (int fila = 1; fila<matriz.length; fila++){
+                                matriz[fila][col] = '\0';
+                            }
+                        }
+                        tablero++;
+
+                        if (cierreJuego == 1) {
+                           ResumenPartidas(tabGanados, tabJugados);   
+                        }
+                        break;
+                    }
+                 
                 } 
             }
         }               
@@ -523,7 +494,44 @@ public class Juego{
         String numFormat = formatDec.format(porcent);
         System.out.println("Estos son tus resultados:");
         System.out.println("Tableros jugados: " + tabJugados + " | Tableros ganados: " + tabGanados +"\n" + "Porcentaje de victoria: " + numFormat + " %");
-    }    
+    }
+    
+    public static String IntToString(int col, String letra){
+        switch (col) {
+            case 1:
+                letra = "A"; break;
+            case 2:
+                letra = "B"; break;
+            case 3:
+                letra = "C"; break;
+            case 4:
+                letra = "D"; break;
+            case 5:
+                letra = "E"; break;   
+            default:
+                letra = "F"; break;
+            }
+        return letra;    
+    }
+
+    public static Integer CharToInt(char eJ2, int v2){
+         switch (eJ2) {
+            case 'A':
+                v2 = 1; break;
+            case 'B':
+                v2 = 2; break;
+            case 'C':
+                v2 = 3; break;
+            case 'D':
+                v2 = 4; break;
+            case 'E':
+                v2 = 5; break;    
+            default:
+                v2 = 6; break;  
+        }
+        return v2;
+    }
+
 }
 
  
