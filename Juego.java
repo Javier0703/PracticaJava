@@ -5,8 +5,6 @@ import java.text.DecimalFormat;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-//import java.text.DecimalFormat;
-
 public class Juego{
     public static void main(String[] args) {
         char[][] matriz = new char[7][7];
@@ -116,14 +114,10 @@ public class Juego{
                     Scanner in = new Scanner(System.in); 
                     if (count == 36){
                         System.out.println("Pulse tecla intro si ha terminado:");
-                        System.out.print("Jugada:" + "\t");
+                     
                     }
-
-                    else{
-                        //Comprobar si la entrada es correcta
-                        System.out.print("Jugada: ");
-                    }
-
+                    
+                    System.out.print("Jugada: ");
                     String casilla = in.nextLine();
 
                         if (casilla.length() == 2) {
@@ -134,7 +128,6 @@ public class Juego{
                                 //Comprobar si la casilla está bloqueada
                                 int cent = 0;
                                 for (int i=0; i<arrayCasillasBlocked.length; i++){
-
                                     if (arrayCasillasBlocked[i].equals(casilla)){
                                         cent++;
                                         break;
@@ -225,7 +218,211 @@ public class Juego{
                             int r = 0;
                             int sumarX = 0;
                             int sumarO = 0;
-                            Comprobacion.Comprobar(matriz,sumarO,sumarX,r,tabJugados,tabGanados);
+
+                            //Ver si hay 3 X / O seguidas en filas
+                            for (int fila = 1; fila<matriz.length; fila++){
+                                for (int col = 1; col<matriz.length; col++){
+                                    if (matriz[fila][col] == 'x') {
+                                        sumarX++;
+                                        if (sumarO > 0) {
+                                            sumarO--;
+                                        }
+                                    }
+                    
+                                    else{
+                                        sumarO++;
+                                        if(sumarX > 0){
+                                            sumarX--;
+                                        }
+                                    }
+                    
+                                    if (sumarO == 3 || sumarX == 3){
+                                        break;
+                                    }
+                                }
+                    
+                                if (sumarX == 3 || sumarO == 3) {
+                                    System.out.println("¡Tablero Fallado!");
+                                    System.out.println("Has incumplido una norma (no puede haber 3 'x' o 3 'o' contiguas en horizontal)");
+                                    r++;
+                                    break;
+                                }
+                    
+                                sumarO = 0;
+                                sumarX = 0;
+                            }
+                    
+                            sumarX = 0;
+                            sumarO = 0;
+                    
+                            //Ver si hay 3 X / O seguidas en Columnas
+                            if (r == 0) {
+                                for (int col = 1; col<matriz.length; col++){
+                                    for (int fila = 1; fila<matriz.length; fila++){
+                                        if (matriz[fila][col] == 'x') {
+                                            sumarX++;
+                                            if (sumarO > 0) {
+                                                sumarO--;
+                                            }
+                                        }
+                    
+                                        else{
+                                            sumarO++;
+                                            if(sumarX > 0){
+                                                sumarX--;
+                                            }
+                                        }
+                    
+                                        if (sumarO == 3 || sumarX == 3){
+                                            break;
+                                        }
+                    
+                                    }
+                    
+                                    if (sumarX == 3 || sumarO == 3) {
+                                        System.out.println("¡Tablero Fallado!");
+                                        System.out.println("Has incumplido una norma (no puede haber 3 'x' o 3 'o' contiguas en vertical)");
+                                        r++;
+                                        break;
+                                    }
+                    
+                                    sumarO = 0;
+                                    sumarX = 0;
+                                } 
+                            }
+                    
+                            sumarO = 0;
+                            sumarX = 0;
+                    
+                    
+                            //Validar Si las casillas son las mismas X y O
+                            if(r == 0){
+                                for (int fila = 1; fila<matriz.length; fila++){
+                                    for (int col = 1; col<matriz.length; col++){
+                                        if (matriz[fila][col] == 'x') {
+                                            sumarX++;
+                                        }
+                                        else{
+                                            sumarO++;
+                                        }
+                                    }
+                    
+                                    if (sumarO != sumarX) {
+                                        System.out.println("¡Tablero Fallado!");
+                                        System.out.println("Debe de haber la misma cantidad de X que de O en cada linea");
+                                        r++;
+                                        break;
+                                    }
+                    
+                                    sumarO = 0;
+                                    sumarX = 0;
+                                }
+                            }
+                            
+                    
+                            if (r == 0) {
+                                for (int col = 1; col<matriz.length; col++){
+                                    for (int fila = 1; fila<matriz.length; fila++){
+                                        if (matriz[fila][col] == 'x') {
+                                            sumarX++;
+                                        }
+                                        else{
+                                            sumarO++;
+                                        }
+                                    }
+                    
+                                    if (sumarO != sumarX) {
+                                        System.out.println("¡Tablero Fallado!");
+                                        System.out.println("Debe de haber la misma cantidad de X que de O en cada columna");
+                                        r++;
+                                        break;
+                                    }
+                                    sumarO = 0;
+                                    sumarX = 0;
+                                }  
+                                
+                            }
+                    
+                            //Validar si las columnas y filas no hay repetida
+                    
+                            //filaOCol es la cadena que guardaremos (1 fila / col) para luego agregarlas a un array y comparar si son iguales
+                            //Lineas
+                    
+                            StringBuilder filaOCol = new StringBuilder();
+                            String[] cadenas = new String[6];
+                            int c = 0;
+                    
+                            if (r == 0){
+                    
+                                for (int fila = 1; fila<matriz.length; fila++){
+                                    for (int col = 1; col<matriz.length; col++){
+                                        filaOCol.append(matriz[fila][col]);
+                                    }
+                                    cadenas[fila-1] = filaOCol.toString();
+                                    filaOCol.setLength(0);
+                                }
+                    
+                                //Comparamos el array
+                                for (int v = 0; v<cadenas.length; v++){
+                                    for (int w = 0; w<cadenas.length; w++){
+                                        if (v != w) {
+                                            if (cadenas[v].equals(cadenas[w])) {
+                                                c++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                    
+                                    if (c != 0) {
+                                        System.out.println("¡Tablero Fallado!");
+                                        System.out.println("No puede haber 2 filas / columnas iguales");
+                                        r++;
+                                        break;
+                                    }
+                                }
+                    
+                            }
+                            
+                            cadenas = null;
+                            cadenas = new String[6];
+                            c = 0;
+                    
+                            //Columnas
+                            if (r == 0) {
+                                for (int col = 1; col<matriz.length; col++){
+                                for (int fila = 1; fila<matriz.length; fila++){
+                                    filaOCol.append(matriz[fila][col]);
+                                }
+                                cadenas[col-1] = filaOCol.toString();
+                                filaOCol.setLength(0);
+                                } 
+                    
+                                //Comparamos el valor
+                                for (int v = 0; v<cadenas.length; v++){
+                                    for (int w = 0; w<cadenas.length; w++){
+                                        if (v != w) {
+                                            if (cadenas[v].equals(cadenas[w])) {
+                                                c++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                    
+                                    if (c != 0) {
+                                        System.out.println("¡Tablero Fallado!");
+                                        System.out.println("No puede haber 2 filas / columnas iguales");
+                                        r++;
+                                        break;
+                                    }
+                                }
+                            }
+                    
+                            tabJugados++;
+                    
+                            if (r == 0) {
+                                tabGanados++;
+                                System.out.println("¡Tablero conseguido!");
+                            }
 
                             while (true) {
                                 System.out.println("¿Quiere volver a jugar?");
@@ -271,7 +468,7 @@ public class Juego{
         }               
     }
 
-    public static void ImprimirMatriz(char[][] matriz){
+    private static void ImprimirMatriz(char[][] matriz){
         for (int fila = 0; fila < matriz.length; fila++) {
             for (int col = 0; col < matriz[fila].length; col++) {
                     System.out.print(matriz[fila][col] + "\t");
@@ -280,7 +477,7 @@ public class Juego{
         }
     }
 
-    public static void ResumenPartidas(int tabGanados, int tabJugados ){
+    private static void ResumenPartidas(int tabGanados, int tabJugados ){
         double porcent = (double)tabGanados/tabJugados;
         porcent = porcent*100;
         DecimalFormat formatDec = new DecimalFormat("#.##");
@@ -289,7 +486,7 @@ public class Juego{
         System.out.println("Tableros jugados: " + tabJugados + " | Tableros ganados: " + tabGanados +"\n" + "Porcentaje de victoria: " + numFormat + " %");
     }
     
-    public static String IntToString(int col, String letra){
+    private static String IntToString(int col, String letra){
         switch (col) {
             case 1: letra = "A"; break;
             case 2: letra = "B"; break;
@@ -301,7 +498,7 @@ public class Juego{
         return letra;    
     }
 
-    public static Integer CharToInt(char eJ2, int v2){
+    private static Integer CharToInt(char eJ2, int v2){
          switch (eJ2) {
             case 'A': v2 = 1; break;
             case 'B': v2 = 2; break;
@@ -313,23 +510,4 @@ public class Juego{
         return v2;
     }
 
-    public static void VolverAJugar(int respuesta, int cierreJuego, Scanner in){
-        while (true) {
-            System.out.println("¿Quiere volver a jugar?");
-            String resp = in.nextLine().toUpperCase();
-            if(resp.toUpperCase().equals("SI")){
-                respuesta++;
-                break;
-            }
-
-            else if(resp.toUpperCase().equals("NO")){
-                respuesta++;
-                cierreJuego++;
-                break;
-            }
-            else{
-                System.out.println("Entrada no valida. Responda SI o NO por favor.");  
-            }
-        }
-    }
 }
