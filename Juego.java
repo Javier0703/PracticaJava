@@ -70,6 +70,7 @@ public class Juego{
                 StringBuilder casillaBloq = new StringBuilder();
                 linea = linea.replaceAll(" ", "");
                 int indiceTablero = 0;
+                
                 for (int fila = 1; fila < matriz.length; fila++) {
                     for (int col = 1; col < matriz[fila].length; col++) {
                         char model = linea.charAt(indiceTablero++);
@@ -98,7 +99,7 @@ public class Juego{
 
                 //StringBuilder de los movimientos realizados
                 StringBuilder movimientos = new StringBuilder();
-
+                Scanner in = new Scanner(System.in); 
                 while (true) {
                     //Recorremos la Matriz para ver si esta vacía o no
                     int count = 0;
@@ -111,7 +112,6 @@ public class Juego{
                     }
 
                     //Si es 36, esta llena
-                    Scanner in = new Scanner(System.in); 
                     if (count == 36){
                         System.out.println("Pulse tecla intro si ha terminado:");
                      
